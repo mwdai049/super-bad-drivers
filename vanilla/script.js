@@ -20,6 +20,21 @@ let tooltip = d3.select("body").append("div")
   .style("opacity", 0)
   .style("position", "absolute");
 
+let tooltipStyles = `
+.tooltip {
+  font-family: "Arial", sans-serif;
+  background-color: #f0dba8;
+  border-radius: 10px;
+  width: 200px;
+  color: black;
+  position: absolute;
+  padding: 10px;
+}
+`;
+
+// Append styles to the document's head
+d3.select("head").append("style").text(tooltipStyles);
+
 d3.queue()
     .defer(d3.json, "https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json")
     .defer(d3.csv, "https://raw.githubusercontent.com/fivethirtyeight/data/master/bad-drivers/bad-drivers.csv", function(d) {
