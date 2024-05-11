@@ -64,12 +64,11 @@ function ready(error, topo) {
       tooltip.transition()
               .duration(200)
               .style("opacity", .9);
-          tooltip.html("tooltip")  // change tooltip displayed info
+          tooltip.html(d.properties.name)  // change tooltip displayed info
               .style("left", (d3.event.pageX + 10) + "px")
               .style("top", (d3.event.pageY - 28) + "px");
     })
     
-
     .on("mouseout", function(d) {
       d3.select(this).style("fill", colorScale(d.total));
       tooltip.transition()
