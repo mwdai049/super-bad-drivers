@@ -8,7 +8,7 @@ let barChartWidth = +barChartSvg.attr("width");
 let barChartHeight = +barChartSvg.attr("height");
 
 // Margins for the bar chart
-let margin = { top: 30, right: 30, bottom: 70, left: 60 },
+let margin = { top: 30, right: 30, bottom: 110, left: 60 },
     chartWidth = barChartWidth - margin.left - margin.right,
     chartHeight = barChartHeight - margin.top - margin.bottom;
 
@@ -67,11 +67,12 @@ function ready(error, topo) {
 
   // Mouseover event
   .on("mouseover", function(d) {
+    let stateData = data.get(d.properties.name);
     d3.select(this).style("fill", "gray");
     tooltip.transition()
             .duration(200)
             .style("opacity", .9);
-        tooltip.html(d.properties.name)  // tooltip displayed info
+        tooltip.html(d.properties.name + "<br>" + stateData.rate + " drivers involved in fatal collisions per billion miles")
             .style("left", (d3.event.pageX + 10) + "px")
             .style("top", (d3.event.pageY - 28) + "px");
   })
@@ -88,8 +89,8 @@ function ready(error, topo) {
   .on("click", function(d) {
     let stateData = data.get(d.properties.name);
     if (stateData) {
-      updateBarChart(stateData);
-      console.log(stateData)
+      showPopupNote();
+      updateBarChart(stateData, d.properties.name);
     }
   });
 
@@ -104,12 +105,29 @@ function ready(error, topo) {
   barChart.append("g")
     .attr("class", "y-axis");
 
-  function updateBarChart(stateData) {
+  // X-axis label
+  barChart.append("text")
+  .attr("class", "x-axis-label")
+  .attr("text-anchor", "middle")
+  .attr("x", chartWidth / 2)
+  .attr("y", chartHeight + margin.bottom - 2)
+  .text("Causes of Fatal Collisions");
+
+  // Y-axis label
+  let yAxisLabel = barChart.append("text")
+    .attr("class", "y-axis-label")
+    .attr("text-anchor", "middle")
+    .attr("transform", "rotate(-90)")
+    .attr("x", -chartHeight / 2)
+    .attr("y", -margin.left + 15)
+
+
+  function updateBarChart(stateData, stateName) {
     let causes = [
       { cause: "Speeding", value: stateData.speeding },
       { cause: "Alcohol-Impaired", value: stateData.alcohol },
       { cause: "Distracted", value: stateData.distracted },
-      { cause: "Previous Accidents", value: stateData.previous }
+      { cause: "Had Previous Accidents", value: stateData.previous }
     ];
     
     x.domain(causes.map(d => d.cause));
@@ -125,6 +143,7 @@ function ready(error, topo) {
     // Y-axis
     barChart.select(".y-axis")
       .call(d3.axisLeft(y));
+    yAxisLabel.text("Percentage of Drivers in " + stateName);
 
     let bars = barChart.selectAll(".bar")
       .data(causes);
@@ -169,4 +188,16 @@ function ready(error, topo) {
 
     labels.exit().remove();
   }
+}
+
+function showPopupNote() {
+  d3.select("#popup-note").classed("hidden", false);
+
+  // Hide popup note when clicking outside of it
+  d3.select("body").on("click", function(event) {
+      if (!d3.select(event.target).closest("#popup-note").node() &&
+          !d3.select(event.target).closest("path").node()) {
+          d3.select("#popup-note").classed("hidden", true);
+      }
+  });
 }
