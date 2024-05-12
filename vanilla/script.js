@@ -8,7 +8,7 @@ let barChartWidth = +barChartSvg.attr("width");
 let barChartHeight = +barChartSvg.attr("height");
 
 // Margins for the bar chart
-let margin = { top: 30, right: 30, bottom: 110, left: 60 },
+let margin = { top: 80, right: 30, bottom: 110, left: 60 },
     chartWidth = barChartWidth - margin.left - margin.right,
     chartHeight = barChartHeight - margin.top - margin.bottom;
 
@@ -120,7 +120,16 @@ function ready(error, topo) {
     .attr("transform", "rotate(-90)")
     .attr("x", -chartHeight / 2)
     .attr("y", -margin.left + 15)
+    .text("Percentage of Drivers");
 
+  // Bar chart title
+  let barChartTitle = barChartSvg.append("text")
+    .attr("class", "bar-chart-title")
+    .attr("text-anchor", "middle")
+    .attr("x", margin.left + chartWidth / 2)
+    .attr("y", margin.top / 3)
+    .attr("font-size", "16px")
+    .attr("font-weight", "bold");
 
   function updateBarChart(stateData, stateName) {
     let causes = [
@@ -143,7 +152,8 @@ function ready(error, topo) {
     // Y-axis
     barChart.select(".y-axis")
       .call(d3.axisLeft(y));
-    yAxisLabel.text("Percentage of Drivers in " + stateName);
+    
+    barChartTitle.text("Causes of Fatal Collisions in " + stateName);
 
     let bars = barChart.selectAll(".bar")
       .data(causes);
