@@ -3,6 +3,19 @@ let svg = d3.select("svg");
 let width = +svg.attr("width");
 let height = +svg.attr("height");
 
+let barChartSvg = d3.select("svg#bar_chart");
+let barChartWidth = +barChartSvg.attr("width");
+let barChartHeight = +barChartSvg.attr("height");
+
+// Margins for the bar chart
+let margin = { top: 30, right: 30, bottom: 70, left: 60 },
+    chartWidth = barChartWidth - margin.left - margin.right,
+    chartHeight = barChartHeight - margin.top - margin.bottom;
+
+let barChart = barChartSvg.append("g")
+.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
 // Map and projection
 let path = d3.geoPath();
 let projection = d3.geoAlbersUsa()
@@ -20,25 +33,16 @@ let tooltip = d3.select("body").append("div")
   .style("opacity", 0)
   .style("position", "absolute");
 
-let tooltipStyles = `
-.tooltip {
-  font-family: "Arial", sans-serif;
-  background-color: #f0dba8;
-  border-radius: 10px;
-  width: 200px;
-  color: black;
-  position: absolute;
-  padding: 10px;
-}
-`;
-
-// Append styles to the document's head
-d3.select("head").append("style").text(tooltipStyles);
-
 d3.queue()
     .defer(d3.json, "https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json")
     .defer(d3.csv, "https://raw.githubusercontent.com/fivethirtyeight/data/master/bad-drivers/bad-drivers.csv", function(d) {
-      data.set(d.State, +d["Number of drivers involved in fatal collisions per billion miles"]);
+      data.set(d.State, {
+        rate: +d["Number of drivers involved in fatal collisions per billion miles"],
+        speeding: +d["Percentage Of Drivers Involved In Fatal Collisions Who Were Speeding"],
+        alcohol: +d["Percentage Of Drivers Involved In Fatal Collisions Who Were Alcohol-Impaired"],
+        distracted: +d["Percentage Of Drivers Involved In Fatal Collisions Who Were Not Distracted"],
+        previous: +d["Percentage Of Drivers Involved In Fatal Collisions Who Had Not Been Involved In Any Previous Accidents"]
+      });
     })
     .await(ready);
   
@@ -55,7 +59,7 @@ function ready(error, topo) {
     .attr("d", d3.geoPath().projection(projection))
     // set the color of each state
     .attr("fill", function(d) {
-      d.total = data.get(d.properties.name) || 0;
+      d.total = data.get(d.properties.name)?.rate || 0;
       return colorScale(d.total);
     })
 
@@ -64,7 +68,7 @@ function ready(error, topo) {
       tooltip.transition()
               .duration(200)
               .style("opacity", .9);
-          tooltip.html(d.properties.name)  // change tooltip displayed info
+          tooltip.html(d.properties.name)  // tooltip displayed info
               .style("left", (d3.event.pageX + 10) + "px")
               .style("top", (d3.event.pageY - 28) + "px");
     })
@@ -74,5 +78,68 @@ function ready(error, topo) {
       tooltip.transition()
               .duration(200)
               .style("opacity", 0);
+    })
+    .on("click", function(d) {
+      let stateData = data.get(d.properties.name);
+      if (stateData) {
+        updateBarChart(stateData);
+        console.log(stateData)
+      }
     });
+
+    // Initialize the bar chart
+    let x = d3.scaleBand().range([0, chartWidth]).padding(0.2);
+    let y = d3.scaleLinear().range([chartHeight, 0]);
+  
+    barChart.append("g")
+      .attr("class", "x-axis")
+      .attr("transform", "translate(0," + chartHeight + ")");
+  
+    barChart.append("g")
+      .attr("class", "y-axis");
+  
+    function updateBarChart(stateData) {
+      let causes = [
+        { cause: "Speeding", value: stateData.speeding },
+        { cause: "Alcohol-Impaired", value: stateData.alcohol },
+        { cause: "Not Distracted", value: stateData.distracted },
+        { cause: "No Previous Accidents", value: stateData.previous }
+      ];
+      
+      x.domain(causes.map(d => d.cause));
+      y.domain([0, d3.max(causes, d => d.value)]);
+  
+      // X-axis
+      barChart.select(".x-axis")
+        .call(d3.axisBottom(x))
+        .selectAll("text")
+          .attr("transform", "translate(-10,0)rotate(-45)")
+          .style("text-anchor", "end");
+  
+      // Y-axis
+      barChart.select(".y-axis")
+        .call(d3.axisLeft(y));
+  
+      let bars = barChart.selectAll(".bar")
+        .data(causes);
+  
+      // Bars
+      bars.enter()
+        .append("rect")
+        .attr("class", "bar")
+        .attr("x", d => x(d.cause))
+        .attr("y", d => y(d.value))
+        .attr("width", x.bandwidth())
+        .attr("height", d => chartHeight - y(d.value))
+        .attr("fill", "#69b3a2");
+  
+      bars.transition()
+        .duration(500)
+        .attr("x", d => x(d.cause))
+        .attr("y", d => y(d.value))
+        .attr("width", x.bandwidth())
+        .attr("height", d => chartHeight - y(d.value));
+  
+      bars.exit().remove();
+}
   }

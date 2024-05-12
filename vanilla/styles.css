@@ -1,0 +1,10 @@
+.tooltip {
+    font-family: "Arial", sans-serif;
+    background-color: #f0dba8;
+    border-radius: 10px;
+    width: 200px;
+    color: black;
+    position: absolute;
+    padding: 10px;
+  }
+  
