@@ -28,11 +28,13 @@ let colorScale = d3.scaleThreshold()
   .domain([10, 20, 50, 100, 200, 500])
   .range(d3.schemeBlues[7]);
 
+// Tooltip
 let tooltip = d3.select("body").append("div")
   .attr("class", "tooltip")
   .style("opacity", 0)
   .style("position", "absolute");
 
+// Fetch data
 d3.queue()
     .defer(d3.json, "https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json")
     .defer(d3.csv, "https://raw.githubusercontent.com/fivethirtyeight/data/master/bad-drivers/bad-drivers.csv", function(d) {
@@ -40,8 +42,8 @@ d3.queue()
         rate: +d["Number of drivers involved in fatal collisions per billion miles"],
         speeding: +d["Percentage Of Drivers Involved In Fatal Collisions Who Were Speeding"],
         alcohol: +d["Percentage Of Drivers Involved In Fatal Collisions Who Were Alcohol-Impaired"],
-        distracted: +d["Percentage Of Drivers Involved In Fatal Collisions Who Were Not Distracted"],
-        previous: +d["Percentage Of Drivers Involved In Fatal Collisions Who Had Not Been Involved In Any Previous Accidents"]
+        distracted: 100 - +d["Percentage Of Drivers Involved In Fatal Collisions Who Were Not Distracted"],
+        previous: 100 - +d["Percentage Of Drivers Involved In Fatal Collisions Who Had Not Been Involved In Any Previous Accidents"]
       });
     })
     .await(ready);
@@ -63,83 +65,108 @@ function ready(error, topo) {
       return colorScale(d.total);
     })
 
-    .on("mouseover", function(d) {
-      d3.select(this).style("fill", "gray");
-      tooltip.transition()
-              .duration(200)
-              .style("opacity", .9);
-          tooltip.html(d.properties.name)  // tooltip displayed info
-              .style("left", (d3.event.pageX + 10) + "px")
-              .style("top", (d3.event.pageY - 28) + "px");
-    })
-    
-    .on("mouseout", function(d) {
-      d3.select(this).style("fill", colorScale(d.total));
-      tooltip.transition()
-              .duration(200)
-              .style("opacity", 0);
-    })
-    .on("click", function(d) {
-      let stateData = data.get(d.properties.name);
-      if (stateData) {
-        updateBarChart(stateData);
-        console.log(stateData)
-      }
-    });
+  // Mouseover event
+  .on("mouseover", function(d) {
+    d3.select(this).style("fill", "gray");
+    tooltip.transition()
+            .duration(200)
+            .style("opacity", .9);
+        tooltip.html(d.properties.name)  // tooltip displayed info
+            .style("left", (d3.event.pageX + 10) + "px")
+            .style("top", (d3.event.pageY - 28) + "px");
+  })
+  
+  // Mouseout event
+  .on("mouseout", function(d) {
+    d3.select(this).style("fill", colorScale(d.total));
+    tooltip.transition()
+            .duration(200)
+            .style("opacity", 0);
+  })
 
-    // Initialize the bar chart
-    let x = d3.scaleBand().range([0, chartWidth]).padding(0.2);
-    let y = d3.scaleLinear().range([chartHeight, 0]);
-  
-    barChart.append("g")
-      .attr("class", "x-axis")
-      .attr("transform", "translate(0," + chartHeight + ")");
-  
-    barChart.append("g")
-      .attr("class", "y-axis");
-  
-    function updateBarChart(stateData) {
-      let causes = [
-        { cause: "Speeding", value: stateData.speeding },
-        { cause: "Alcohol-Impaired", value: stateData.alcohol },
-        { cause: "Not Distracted", value: stateData.distracted },
-        { cause: "No Previous Accidents", value: stateData.previous }
-      ];
-      
-      x.domain(causes.map(d => d.cause));
-      y.domain([0, d3.max(causes, d => d.value)]);
-  
-      // X-axis
-      barChart.select(".x-axis")
-        .call(d3.axisBottom(x))
-        .selectAll("text")
-          .attr("transform", "translate(-10,0)rotate(-45)")
-          .style("text-anchor", "end");
-  
-      // Y-axis
-      barChart.select(".y-axis")
-        .call(d3.axisLeft(y));
-  
-      let bars = barChart.selectAll(".bar")
-        .data(causes);
-  
-      // Bars
-      bars.enter()
-        .append("rect")
-        .attr("class", "bar")
-        .attr("x", d => x(d.cause))
-        .attr("y", d => y(d.value))
-        .attr("width", x.bandwidth())
-        .attr("height", d => chartHeight - y(d.value))
-        .attr("fill", "#69b3a2");
-  
-      bars.transition()
+  // Mouseclick event
+  .on("click", function(d) {
+    let stateData = data.get(d.properties.name);
+    if (stateData) {
+      updateBarChart(stateData);
+      console.log(stateData)
+    }
+  });
+
+  // Initialize the bar chart
+  let x = d3.scaleBand().range([0, chartWidth]).padding(0.2);
+  let y = d3.scaleLinear().range([chartHeight, 0]);
+
+  barChart.append("g")
+    .attr("class", "x-axis")
+    .attr("transform", "translate(0," + chartHeight + ")");
+
+  barChart.append("g")
+    .attr("class", "y-axis");
+
+  function updateBarChart(stateData) {
+    let causes = [
+      { cause: "Speeding", value: stateData.speeding },
+      { cause: "Alcohol-Impaired", value: stateData.alcohol },
+      { cause: "Distracted", value: stateData.distracted },
+      { cause: "Previous Accidents", value: stateData.previous }
+    ];
+    
+    x.domain(causes.map(d => d.cause));
+    y.domain([0, d3.max(causes, d => d.value)]);
+
+    // X-axis
+    barChart.select(".x-axis")
+      .call(d3.axisBottom(x))
+      .selectAll("text")
+        .attr("transform", "translate(-10,0)rotate(-45)")
+        .style("text-anchor", "end");
+
+    // Y-axis
+    barChart.select(".y-axis")
+      .call(d3.axisLeft(y));
+
+    let bars = barChart.selectAll(".bar")
+      .data(causes);
+
+    // Bars
+    bars.enter()
+      .append("rect")
+      .attr("class", "bar")
+      .attr("x", d => x(d.cause))
+      .attr("y", d => y(d.value))
+      .attr("width", x.bandwidth())
+      .attr("height", d => chartHeight - y(d.value))
+      .attr("fill", "#69b3a2");
+
+    bars.transition()
+      .duration(500)
+      .attr("x", d => x(d.cause))
+      .attr("y", d => y(d.value))
+      .attr("width", x.bandwidth())
+      .attr("height", d => chartHeight - y(d.value));
+
+    bars.exit().remove();
+
+    // Append value numbers on top of each bar
+    let labels = barChart.selectAll(".label")
+          .data(causes);
+
+    labels.enter()
+        .append("text")
+        .attr("class", "label")
+        .attr("x", d => x(d.cause) + x.bandwidth() / 2)
+        .attr("y", d => y(d.value) - 5)
+        .attr("text-anchor", "middle")
+        .text(d => d.value);
+
+    labels.transition()
         .duration(500)
-        .attr("x", d => x(d.cause))
-        .attr("y", d => y(d.value))
-        .attr("width", x.bandwidth())
-        .attr("height", d => chartHeight - y(d.value));
-  
-      bars.exit().remove();
-}
+        .attr("x", d => x(d.cause) + x.bandwidth() / 2)
+        .attr("y", d => y(d.value) - 5)
+        .attr("text-anchor", "middle")
+        .text(d => d.value);
+
+    labels.exit().remove();
   }
+}
