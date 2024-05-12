@@ -120,7 +120,7 @@ function ready(error, topo) {
     .attr("transform", "rotate(-90)")
     .attr("x", -chartHeight / 2)
     .attr("y", -margin.left + 15)
-    .text("Percentage of Drivers");
+    .text("Percentage of Drivers in Fatal Collisions");
 
   // Bar chart title
   let barChartTitle = barChartSvg.append("text")
