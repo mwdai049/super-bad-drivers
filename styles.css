@@ -28,6 +28,12 @@ h4 {
   font-family: "Helvetica";
   color: #3C5B6F;
 }
+
+p {
+  padding-left: 30px;
+  padding-right: 30px;
+  width: 700px;
+}
   
 .tooltip {
   font-family: "Arial", sans-serif;
@@ -44,6 +50,16 @@ h4 {
   align-items: flex-start;
   justify-content: center;
   position: relative;
+}
+
+.centered {
+  line-height: 1.2;
+  position: absolute;
+  margin-top: 2%;
+  margin-left: 25%;
+  justify-content: center;
+  align-items: center; 
+  height: 100vh;
 }
 
 #popup-note {

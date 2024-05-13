@@ -25,6 +25,19 @@
             <svg id="bar_chart" width="420" height="380"></svg>
         </div>
     </div>
+
+    <div class="centered">
+    <p>We selected a choropleth map as our primary visualization, utilizing different color saturations to depict the number of drivers involved in fatal collisions per billion miles. The legend and markers assist the user in deciphering what lighter (fewer deadly drivers) vs darker (more deadly drivers) colors mean. To enhance interactivity, we implemented a tooltip that displays data when hovering over a state, and a side bar plot that appears upon clicking a state. The side bar plot illustrates the causes of fatal collisions in that state as percentages of drivers, and we included axis labels and bar heights to enhance readability. We chose blue as our main color scheme because the cool colors establish a neutral tone and vibe for our website. We also added some annotations to elaborate on our website’s functionality, e.g. letting the user know about additional information upon clicking on the state.
+        </p>
+        <p>We believe the choropleth map is well-suited for our dataset, which contains state-level data that can be effectively presented geographically. We originally also considered a bar chart where each bar represented a state’s percentage of deadly drivers under alcohol influence. Given that there are 50 states and we have more collision causes, we decided against this idea and went with the choropleth map and side bar plots. We also considered a pie chart to display each state’s aggregated causes of collisions, but it was not suitable due to the percentages not summing to 100%. This is because drivers may fit into multiple categories (such as both speeding and distracted) or none at all.</p>
+        <p>Our development process involved collaborative brainstorming to outline the application's concept. We brainstormed a larger idea of more storytelling (using scrollytelling :^) and user interactivity using a driving simulation but it was out of scope and a bit too ambitious for this project. We decided on reconsidering it for the final project instead.
+        </p>
+            
+        <p>Henry initiated by creating the basic framework and adding the choropleth map, followed by Joyce who integrated the tooltip and implemented the bar plot. Monica handled deployment to GitHub, in addition to adjusting color scale, adding a legend and various textual elements.
+        </p>
+        <p>In total, we invested approximately 10 hours into the development process, with a significant portion dedicated to early brainstorming and debugging.</p>
+        </p>
+    </div>
     <script src="./script.js"></script>
 </body>
 </html>
