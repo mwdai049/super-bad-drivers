@@ -90,12 +90,28 @@ function ready(error, topo) {
 
   // Mouseclick event
   .on("click", function(d) {
+    console.log('click');
     let stateData = data.get(d.properties.name);
     if (stateData) {
-      showPopupNote();
+      console.log('runing if');
+      // showPopupNote();
+      d3.select("#popup-note").classed("hidden", false);
+      // d3.select("#popup-note").classed("hidden", true);
       updateBarChart(stateData, d.properties.name);
     }
   });
+
+  document.addEventListener('click', function(event) {
+    // debug code showing what's being clicked
+    console.log(event.target.tagName);
+    if (event.target.tagName !== 'path') {
+        console.log('Clicked on background');
+        d3.select("#popup-note").classed("hidden", true);
+    }
+});
+
+
+
 
   // Initialize the bar chart
   let x = d3.scaleBand().range([0, chartWidth]).padding(0.2);
@@ -205,14 +221,14 @@ function ready(error, topo) {
 
 function showPopupNote() {
   d3.select("#popup-note").classed("hidden", false);
-
-  // Hide popup note when clicking outside of it
-  d3.select("body").on("click", function(event) {
-      if (!d3.select(event.target).closest("#popup-note").node() &&
-          !d3.select(event.target).closest("path").node()) {
-          d3.select("#popup-note").classed("hidden", true);
-      }
-  });
+  // code here didn't work because the function is only called when
+  // a state object is clicked
+  // d3.select("body").on("click", function(event) {
+  //     if (!d3.select(event.target).closest("#popup-note").node() &&
+  //         !d3.select(event.target).closest("path").node()) {
+  //         d3.select("#popup-note").classed("hidden", true);
+  //     }
+  // });
 }
 
 //Append a defs (for definition) element to your SVG
