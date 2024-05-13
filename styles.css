@@ -6,7 +6,7 @@ body {
 }
 
 h1 {
-    padding: 10px 20px 0px 50px;
+    padding: 0px 20px 0px 50px;
     font-size: 35px;
     font-family: "Helvetica";
     font-weight: bold;
@@ -17,6 +17,14 @@ h3 {
   padding-left: 50px;
   margin-top: -10px;
   font-size: 20px;
+  font-family: "Helvetica";
+  color: #3C5B6F;
+}
+
+h4 {
+  padding-left: 50px;
+  margin-top: -10px;
+  font-size: 15px;
   font-family: "Helvetica";
   color: #3C5B6F;
 }
@@ -50,14 +58,3 @@ h3 {
   display: none;
 }
         
-/* Legend Font Style */
-body {
-	font: 11px sans-serif;
-}
-        
-/* Legend Position Style */
-.legend {
-	position:absolute;
-	left:800px;
-	top:350px;
-}

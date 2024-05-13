@@ -20,7 +20,7 @@ let barChart = barChartSvg.append("g")
 let path = d3.geoPath();
 let projection = d3.geoAlbersUsa()
   .scale(1150)
-  .translate([width / 2, height / 2]);
+  .translate([width / 2, height / 2 - 70]);
 
 // Data and color scale
 let data = d3.map();
@@ -61,7 +61,6 @@ function ready(error, topo) {
     .attr("d", d3.geoPath().projection(projection))
     // set the color of each state
     .attr("fill", function(d) {
-      console.log(d)
       d.total = data.get(d.properties.name)?.rate || 0;
       return colorScale(d.total);
     })
@@ -215,3 +214,52 @@ function showPopupNote() {
       }
   });
 }
+
+//Append a defs (for definition) element to your SVG
+var defs = svg.append("defs");
+
+//Append a linearGradient element to the defs and give it a unique id
+var linearGradient = defs.append("linearGradient")
+    .attr("id", "linear-gradient");
+
+linearGradient
+    .attr("x1", "0%")
+    .attr("y1", "0%")
+    .attr("x2", "100%")
+    .attr("y2", "0%");
+
+//Set the color for the start (0%)
+linearGradient.append("stop")
+    .attr("offset", "0%")
+    .attr("stop-color", "#EEF7FF"); //light blue
+
+//Set the color for the end (100%)
+linearGradient.append("stop")
+    .attr("offset", "100%")
+    .attr("stop-color", "#4D869C"); //dark blue
+
+//Draw the rectangle and fill with gradient
+svg.append("rect")
+    .attr("width", 600)
+    .attr("height", 20)
+    .style("fill", "url(#linear-gradient)")
+    .attr("transform", "translate(200, 575)");
+
+// Append text labels
+svg.append("text")
+    .attr("x", 200) 
+    .attr("y", 565)
+    .attr("text-anchor", "left") 
+    .text("Number of drivers involved in fatal collisions per billion miles"); 
+
+svg.append("text")
+    .attr("x", 200) 
+    .attr("y", 615)
+    .attr("text-anchor", "middle")
+    .text("0"); 
+
+svg.append("text")
+    .attr("x", 800)
+    .attr("y", 615)
+    .attr("text-anchor", "middle")
+    .text("25"); 
