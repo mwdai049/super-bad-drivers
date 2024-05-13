@@ -1,43 +1,53 @@
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    font-family: Arial, sans-serif;
-  }
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
 
 h1 {
-    margin: 10px 0;
+    padding: 10px 20px 0px 50px;
+    font-size: 35px;
+    font-family: "Helvetica";
+    font-weight: bold;
+    color: #181D31;
+}
+
+h3 {
+  padding-left: 50px;
+  margin-top: -10px;
+  font-size: 20px;
+  font-family: "Helvetica";
+  color: #3C5B6F;
 }
   
 .tooltip {
-font-family: "Arial", sans-serif;
-background-color: #f0dba8;
-border-radius: 10px;
-width: 200px;
-color: black;
-position: absolute;
-padding: 10px;
+  font-family: "Arial", sans-serif;
+  background-color: #f0dba8;
+  border-radius: 10px;
+  width: 200px;
+  color: black;
+  position: absolute;
+  padding: 10px;
 }
 
 #container {
-display: flex;
-align-items: flex-start;
-justify-content: center;
-position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  position: relative;
 }
 
 #popup-note {
-margin-left: 20px;
-background-color: white;
-border: 1px solid black;
-padding: 10px;
-box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  margin-left: -40px;
+  background-color: white;
+  border: 1px solid black;
+  padding: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
 .hidden {
-display: none;
+  display: none;
 }
         
 /* Legend Font Style */

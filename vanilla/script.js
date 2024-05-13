@@ -19,14 +19,11 @@ let barChart = barChartSvg.append("g")
 // Map and projection
 let path = d3.geoPath();
 let projection = d3.geoAlbersUsa()
-  .scale(1150)
+  .scale(1000)
   .translate([width / 2, height / 2]);
 
 // Data and color scale
 let data = d3.map();
-let colorScale = d3.scaleLinear()
-  .domain([0, 25])
-  .range(["#EEF7FF", "#4D869C"]);
 
 // Tooltip
 let tooltip = d3.select("body").append("div")
@@ -48,6 +45,13 @@ d3.queue()
     })
     .await(ready);
   
+function scaleColor(total) {
+  let color = d3.scaleLinear()
+  .domain([0, 25])
+  .range(["red", "orange"]);
+  return color(total)
+}
+
 function ready(error, topo) {
   if (error) throw error;
 
@@ -63,7 +67,7 @@ function ready(error, topo) {
     .attr("fill", function(d) {
       console.log(d)
       d.total = data.get(d.properties.name)?.rate || 0;
-      return colorScale(d.total);
+      return scaleColor(d.total);
     })
     .style("stroke", "white") // white border color
     .style("stroke-width", 0.5) // border width
@@ -83,7 +87,7 @@ function ready(error, topo) {
   
   // Mouseout event
   .on("mouseout", function(d) {
-    d3.select(this).style("fill", colorScale(d.total));
+    d3.select(this).style("fill", scaleColor(d.total));
     tooltip.transition()
             .duration(200)
             .style("opacity", 0);
