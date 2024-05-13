@@ -15,7 +15,6 @@ let margin = { top: 80, right: 30, bottom: 110, left: 60 },
 let barChart = barChartSvg.append("g")
 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-
 // Map and projection
 let path = d3.geoPath();
 let projection = d3.geoAlbersUsa()
@@ -25,7 +24,7 @@ let projection = d3.geoAlbersUsa()
 // Data and color scale
 let data = d3.map();
 let colorScale = d3.scaleLinear()
-  .domain([0, 25])
+  .domain([8.2, 23.9])
   .range(["#EEF7FF", "#4D869C"]);
 
 // Tooltip
@@ -109,9 +108,6 @@ function ready(error, topo) {
         d3.select("#popup-note").classed("hidden", true);
     }
 });
-
-
-
 
   // Initialize the bar chart
   let x = d3.scaleBand().range([0, chartWidth]).padding(0.2);
@@ -206,14 +202,14 @@ function ready(error, topo) {
         .attr("x", d => x(d.cause) + x.bandwidth() / 2)
         .attr("y", d => y(d.value) - 5)
         .attr("text-anchor", "middle")
-        .text(d => d.value);
+        .text(d => d.value+"%");
 
     labels.transition()
         .duration(500)
         .attr("x", d => x(d.cause) + x.bandwidth() / 2)
         .attr("y", d => y(d.value) - 5)
         .attr("text-anchor", "middle")
-        .text(d => d.value);
+        .text(d => d.value+"%");
 
     labels.exit().remove();
   }
@@ -272,10 +268,10 @@ svg.append("text")
     .attr("x", 200) 
     .attr("y", 615)
     .attr("text-anchor", "middle")
-    .text("0"); 
+    .text("8.2"); 
 
 svg.append("text")
     .attr("x", 800)
     .attr("y", 615)
     .attr("text-anchor", "middle")
-    .text("25"); 
+    .text("23.9"); 
